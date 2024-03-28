@@ -1,6 +1,6 @@
 const ajvModule = require('ajv/dist/2020.js');
 
-const { addHash } = require('../util/objects.js');
+const { addHash } = require('./objects.js');
 
 const ajv = new ajvModule({
   allErrors: true,
