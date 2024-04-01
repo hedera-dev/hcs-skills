@@ -4,10 +4,9 @@ const {
 } = require('@hashgraph/sdk');
 
 
-const { client } = require('../util/sdk-client.js');
-const { deserialise } = require('../util/objects.js');
-const { addHash } = require('../util/objects.js');
-const { skillVerify } = require('../util/skill-verify.js');
+const { client } = require('./sdk-client.js');
+const { deserialise } = require('./objects.js');
+const { skillVerify } = require('./skill-verify.js');
 
 function parseSkill(msgBin, format, callback) {
   const msgStr = Buffer.from(msgBin, format).toString();

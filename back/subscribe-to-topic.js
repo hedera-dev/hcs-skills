@@ -3,7 +3,7 @@ const {
 } = require('@hashgraph/sdk');
 
 const { topicGet } = require('./topic-get.js');
-const { skillSubscribe } = require('../back/skill-subscribe.js');
+const { skillSubscribe } = require('../util/skill-subscribe.js');
 
 // key: topicId
 // value: TopicMessageQuery (subscription)

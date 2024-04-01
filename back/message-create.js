@@ -6,7 +6,7 @@ const {
   topicGet,
 } = require('./topic-get.js');
 
-const { skillPublish } = require('./skill-publish.js');
+const { skillPublish } = require('../util/skill-publish.js');
 
 async function messageCreate(msgObject, topicIdReq) {
   const topicId = topicIdReq || (await topicGet()).topicId;
