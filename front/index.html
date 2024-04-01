@@ -42,8 +42,8 @@
       socket.on('connect', function() {
         console.log('Connected to the Socket.IO server');
       });
-      socket.on("chat-message", function(msg) {
-        console.log("Received message:", msg);
+      socket.on('hcs-skill', function(msg) {
+        console.log('Received message:', msg);
         addMessage(JSON.parse(msg));
       });
 
