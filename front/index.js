@@ -1,13 +1,11 @@
 const socket = io('/');
 
-socket.on('connection', client => { console.log('Client connected...');});
-
 socket.on('connect', function() {
-  console.log('Connected to the Socket.IO server');
+  console.log('Connected to the web sockets server');
 });
 
 socket.on('hcs-skill', function(msg) {
-  console.log('Received message:', msg);
+  console.log('Received HCS Skill:', msg);
   addMessage(JSON.parse(msg));
 });
 
@@ -24,7 +22,7 @@ document.addEventListener('DOMContentLoaded', async (event) => {
       headers: {
         'Content-Type': 'application/json',
       },
-    }
+    },
   );
 
   if (!response.ok) {
@@ -65,7 +63,7 @@ async function submitToHedera() {
         skillName: textInputSkill,
         userName: textInputUsername,
       }),
-    }
+    },
   );
 
   if (!response.ok) {
@@ -104,6 +102,7 @@ function addMessage(message) {
   typeCell.appendChild(typeText);
 
   const hashCell = newRow.insertCell(4);
-  const hashText = document.createTextNode(message.hash);
+  hashCell.title = message.hash;
+  const hashText = document.createTextNode(`${message.hash.substr(0, 6)}…`);
   hashCell.appendChild(hashText);
 }
