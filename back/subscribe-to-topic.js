@@ -7,35 +7,51 @@ const { client } = require('../util/sdk-client.js');
 const { addHash } = require('../util/objects.js');
 const { skillVerify } = require('../util/skill-verify.js');
 
-async function subscribeToTopic(wsServer) {
-  let { topicId } = await topicGet();
+const subscriptions = new Map(); // key: topicId, value: TopicMessageQuery
 
-  // delay the subscription (timeout) 5s
-  await new Promise((resolve) => setTimeout(resolve, 5000));
+async function getSubscription(topicId, wsServer) {
+  const topicIdStr = topicId.toString();
+  let subscription = subscriptions.get(topicIdStr);
 
-  try {
-    new TopicMessageQuery().setTopicId(topicId).subscribe(
-      client,
-      (message) => {
-        const mirrorMessage = new TextDecoder('utf-8').decode(message.contents);
-        const messageJson = JSON.parse(mirrorMessage);
-        const messageWithHash = addHash(messageJson);
+  if (!subscription) {
+    const socketId = `hcs-skill-${topicIdStr}`;
+    console.log(`Initialising new TopicMessageQuery subscription for ${topicId} relayed on socket ID ${socketId}`);
 
-        // Verify if the received message is valid
-        const verificationErrors = skillVerify(messageWithHash);
-        if (verificationErrors && verificationErrors.length > 0) {
-          console.error('Verification errors:', verificationErrors);
-          return;
+    // delay the subscription (timeout) 5s
+    await new Promise((resolve) => setTimeout(resolve, 5000));
+
+    try {
+      subscription = new TopicMessageQuery().setTopicId(topicId).subscribe(
+        client,
+        (message) => {
+          const mirrorMessage = new TextDecoder('utf-8').decode(message.contents);
+          const messageJson = JSON.parse(mirrorMessage);
+          const messageWithHash = addHash(messageJson);
+
+          // Verify if the received message is valid
+          const verificationErrors = skillVerify(messageWithHash);
+          if (verificationErrors && verificationErrors.length > 0) {
+            console.error('Verification errors:', verificationErrors);
+            return;
+          }
+
+          wsServer.emit(socketId, JSON.stringify(messageWithHash));
         }
-
-        wsServer.emit('hcs-skill', JSON.stringify(messageWithHash));
-      }
-    );
-    console.log('MirrorConsensusTopicQuery()', topicId.toString());
-  } catch (error) {
-    console.log('ERROR: MirrorConsensusTopicQuery()', error);
-    process.exit(1);
+      );
+      subscriptions.set(topicIdStr, subscription);
+      console.log('MirrorConsensusTopicQuery()', topicIdStr);
+    } catch (error) {
+      console.log('ERROR: MirrorConsensusTopicQuery()', error);
+      throw error;
+    }
   }
+
+  return subscription;
+}
+
+async function subscribeToTopic(wsServer, topicIdReq) {
+  const topicId = topicIdReq || (await topicGet()).topicId;
+  getSubscription(topicId, wsServer);
 }
 
 module.exports = {

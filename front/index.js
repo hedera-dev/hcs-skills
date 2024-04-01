@@ -4,17 +4,43 @@ socket.on('connect', function() {
   console.log('Connected to the web sockets server');
 });
 
-socket.on('hcs-skill', function(msg) {
-  console.log('Received HCS Skill:', msg);
-  addMessage(JSON.parse(msg));
-});
-
 const data = {
   type: 'hcs-skill/v1',
   topicId: '',
+  socketIdPrevious: '',
+  socketId: '',
 };
 
-document.addEventListener('DOMContentLoaded', async (event) => {
+async function subExistingTopic() {
+  const textInputTopicId = document.getElementById('textInputTopicId').value;
+  if (!textInputTopicId) {
+    alert('Please enter a topic ID to subscribe to.');
+    return;
+  }
+
+  const response = await fetch(
+    `/api/v1/topic/subscribe/${textInputTopicId}`,
+    {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    },
+  );
+
+  if (!response.ok) {
+    const message = `An error occurred: ${response.statusText}`;
+    throw new Error(message);
+  }
+
+  const result = await response.json();
+
+  data.topicId = textInputTopicId;
+
+  updateSubscribedTopic();
+}
+
+async function subNewTopic() {
   const response = await fetch(
     '/api/v1/topic/create',
     {
@@ -32,12 +58,30 @@ document.addEventListener('DOMContentLoaded', async (event) => {
 
   const result = await response.json();
   data.topicId = result.topicId;
-  displayTopicId();
-});
+  updateSubscribedTopic();
+}
 
-function displayTopicId() {
+function updateSubscribedTopic() {
+  // Immediate UI display update
   const newTopicId = document.getElementById('newTopicId');
   newTopicId.innerHTML = `<b>Topic ID: ${data.topicId}</b>`;
+
+  // unsubscribe from listening to previous topic,
+  // and subscribe to listening to new topic instead.
+  data.socketIdPrevious = data.socketId;
+  data.socketId = `hcs-skill-${data.topicId}`;
+  if (!!data.socketIdPrevious) {
+    console.log(`Unsubscribing from socket ID ${data.socketIdPrevious}`);
+    socket.off(data.socketIdPrevious, onSocketHcsSkill);
+  }
+    console.log(`Subscribing to socket ID ${data.socketId}`);
+    socket.on(data.socketId, onSocketHcsSkill);
+}
+
+function onSocketHcsSkill(msg) {
+  console.log('Received HCS Skill:', msg);
+  // TODO add client-side verification
+  addMessage(JSON.parse(msg));
 }
 
 async function submitToHedera() {
@@ -51,7 +95,7 @@ async function submitToHedera() {
 
   // Send message to server to send to Hedera
   const response = await fetch(
-    '/api/v1/message/create',
+    `/api/v1/message/create/${data.topicId}`,
     {
       method: 'POST',
       headers: {

@@ -11,8 +11,8 @@ const {
   operatorId,
 } = require('../util/sdk-client.js');
 
-async function messageCreate(msgObject) {
-  let { topicId } = await topicGet();
+async function messageCreate(msgObject, topicIdReq) {
+  const topicId = topicIdReq || (await topicGet()).topicId;
   if (!topicId) {
     console.error('No topic ID');
     return null;
@@ -22,7 +22,7 @@ async function messageCreate(msgObject) {
     .setTopicId(topicId)
     .setMessage(JSON.stringify(msgObject))
     .execute(client);
-  
+
   await txResponse.getReceipt(client);
 
   return {

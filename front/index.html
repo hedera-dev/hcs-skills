@@ -10,15 +10,23 @@
   <body>
     <div class="container">
       <h2>Submit Skill to Hedera</h2>
-      <div id="newTopicId"><b>Topic ID is being created...</b></div>
-      <input type="text" id="textInputSkill" placeholder="Enter your skill" />
-      <input
-        type="text"
-        id="textInputUsername"
-        placeholder="Enter your username"
-      />
-      <input type="text" id="textInputAccountId" placeholder="Enter your account ID" />
-      <button onclick="submitToHedera()">Submit</button>
+      <div id="newTopicId">
+        <button onclick="subNewTopic()">Subscribe to New Topic</button>
+      </div>
+      <div id="existingTopicId">
+        <input type="text" id="textInputTopicId" placeholder="Enter Topic ID" />
+        <button onclick="subExistingTopic()">Subscribe to Existing Topic</button>
+      </div>
+      <div id="submitSkill">
+        <input type="text" id="textInputSkill" placeholder="Enter your skill" />
+        <input
+          type="text"
+          id="textInputUsername"
+          placeholder="Enter your username"
+        />
+        <input type="text" id="textInputAccountId" placeholder="Enter your account ID" />
+        <button onclick="submitToHedera()">Submit</button>
+      </div>
     </div>
 
     <table id="messagesTable">
