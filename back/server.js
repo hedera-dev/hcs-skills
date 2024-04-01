@@ -12,21 +12,25 @@ const { messageCreate } = require('./message-create.js');
 
 const server = express();
 
-// Use CORS middleware for all routes
-server.use(cors());
+// Middleware for all routes
 
-server.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*'); // allows requests from any origin
-  res.header(
-    'Access-Control-Allow-Headers',
-    'Origin, X-Requested-With, Content-Type, Accept',
-  );
-  next();
-});
-
+const corsOptions = {
+  origin: true,
+  allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept'],
+};
+server.use(cors(corsOptions));
+// server.use((req, res, next) => {
+//   res.header('Access-Control-Allow-Origin', '*'); // allows requests from any origin
+//   res.header(
+//     'Access-Control-Allow-Headers',
+//     'Origin, X-Requested-With, Content-Type, Accept',
+//   );
+//   next();
+// });
 server.use(express.urlencoded({ extended: true }));
-
 server.use(express.json());
+
+// API routes
 
 server.get('/api/v1/topic/get', async (req, res) => {
   try {
@@ -69,10 +73,15 @@ server.post('/api/v1/message/create/:topicId?', async (req, res) => {
   }
 });
 
+// fallback route to serve static files
+
 server.use(express.static(path.resolve(__dirname, '../front')));
 
-const httpServer = http.createServer(server);
+// initialise both the HTTP and WS servers.
+// however, they do not start running/ listening yet -
+// that happens in 'server-run.js';
 
+const httpServer = http.createServer(server);
 const wsServer = new Server(
   {
     cors: {
@@ -84,12 +93,14 @@ const wsServer = new Server(
 
 function getServers () {
   return {
+    server,
     httpServer,
     wsServer,
   };
 }
 
 module.exports = {
+  server,
   httpServer,
   wsServer,
   getServers,

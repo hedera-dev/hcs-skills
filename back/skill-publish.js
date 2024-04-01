@@ -3,24 +3,21 @@ const {
   TopicMessageSubmitTransaction,
 } = require('@hashgraph/sdk');
 
-const {
-  client,
-  operatorId,
-} = require('../util/sdk-client.js');
+const { client } = require('../util/sdk-client.js');
 const { skillVerify } = require('./skill-verify.js');
 const {
   addHash,
   serialise,
 } = require('../util/objects.js');
 
-async function skillPublish(topicId, userName, skillName) {
+async function skillPublish(topicId, accountId, userName, skillName) {
   if (typeof topicId === 'string') {
     topicId = TopicId.fromString(topicId);
   }
 
   const skillData = {
     type: 'hcs-skill/v1',
-    accountId: operatorId.toString(),
+    accountId,
     userName,
     skillName,
   };
@@ -50,7 +47,7 @@ async function skillPublish(topicId, userName, skillName) {
   return {
     status: topicMsgSubmitReceipt.status,
     seqNum: topicMsgSubmitReceipt.topicSequenceNumber,
-    accountId: topicMsgSubmitReceipt.operatorId,
+    operatorId: topicMsgSubmitReceipt.operatorId,
     skillData,
     hash: obj.hash,
   };

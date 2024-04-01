@@ -3,15 +3,11 @@ const {
   TopicMessageQuery,
 } = require('@hashgraph/sdk');
 
-const {
-  client,
-  operatorId,
-} = require('../util/sdk-client.js');
-const { skillVerify } = require('./skill-verify.js');
-const {
-  deserialise,
-  removeHash,
-} = require('../util/objects.js');
+
+const { client } = require('../util/sdk-client.js');
+const { deserialise } = require('../util/objects.js');
+const { addHash } = require('../util/objects.js');
+const { skillVerify } = require('../util/skill-verify.js');
 
 function parseSkill(msgBin, format, callback) {
   const msgStr = Buffer.from(msgBin, format).toString();
@@ -20,7 +16,7 @@ function parseSkill(msgBin, format, callback) {
   if (validationErrors) {
     callback(validationErrors, obj);
   } else {
-    callback(undefined, removeHash(obj));
+    callback(undefined, obj);
   }
 }
 
@@ -37,6 +33,8 @@ async function skillGetAll(topicId, callback) {
   const fetchResponse = await fetch(mirrorNodeUrl);
   const response = await fetchResponse.json();
   response.messages.forEach((msgBin) => parseSkill(msgBin.message, 'base64', callback));
+
+  // Note that there is no subscription object to return, as this is a single request
 }
 
 // listen for new skills being added to the topic
@@ -47,9 +45,11 @@ async function skillSubscribe(topicId, callback) {
 
   // NOTE: Subscribe to HCS topic
   // Step (NNN) in the accompanying tutorial
-  new TopicMessageQuery()
+  const subscription = new TopicMessageQuery()
     .setTopicId(topicId)
     .subscribe(client, (msgBin) => parseSkill(msgBin.contents, 'utf8', callback));
+
+  return subscription;
 }
 
 module.exports = {
