@@ -27,6 +27,7 @@ async function main() {
     validCount: 0,
     invalidCount: 0,
   };
+<<<<<<< HEAD
   await skillSubscribe('0.0.3745107', (err, result) => {
     if (err) {
       result1.invalidCount++;
@@ -40,6 +41,27 @@ async function main() {
   console.log('skillSubscribe message counts:');
   console.log(result1);
 
+||||||| parent of 6f08881 (feat: completed version)
+=======
+  const subscription = await skillSubscribe('0.0.3745107', (err, result) => {
+    if (err) {
+      result1.invalidCount++;
+    } else if (result) {
+      result1.validCount++;
+    }
+  });
+  await skillPublish('0.0.3745107', 'aTestUser', 'aTestSkill');
+  console.log('Waiting 5s...');
+  await new Promise((resolve) => { setTimeout(resolve, 5_000) });
+  console.log('skillSubscribe message counts:');
+  console.log(result1);
+
+  console.log('Waiting 5s...');
+  await new Promise((resolve) => { setTimeout(resolve, 5_000) });
+  await subscription.unsubscribe();
+  console.log('Waiting 5s...');
+  await new Promise((resolve) => { setTimeout(resolve, 5_000) });
+>>>>>>> 6f08881 (feat: completed version)
   client.close();
 }
 
