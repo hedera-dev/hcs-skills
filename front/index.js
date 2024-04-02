@@ -11,6 +11,7 @@ const data = {
   socketId: '',
 };
 
+// Subscribe to an existing topic
 async function subExistingTopic() {
   const textInputTopicId = document.getElementById('textInputTopicId').value;
   if (!textInputTopicId) {
@@ -44,6 +45,7 @@ async function subExistingTopic() {
   updateSubscribedTopic();
 }
 
+// Create a new topic, then subscribe to it (by invoking `subExistingTopic`)
 async function subNewTopic() {
   const response = await fetch(
     '/api/v1/topic/create',
@@ -91,6 +93,7 @@ function onSocketHcsSkill(msg) {
   addMessage(JSON.parse(msg));
 }
 
+// Send message to server, which will relay to HCS topic
 async function submitToHedera() {
   const textInputSkill = document.getElementById('textInputSkill').value;
   const textInputUsername = document.getElementById('textInputUsername').value;
@@ -100,7 +103,6 @@ async function submitToHedera() {
     return;
   }
 
-  // Send message to server to send to Hedera
   const response = await fetch(
     `/api/v1/message/create/${data.topicId}`,
     {
@@ -128,6 +130,7 @@ async function submitToHedera() {
   document.getElementById('textInputAccountId').value = ''; // Clear the input field
 }
 
+// Parse a received skill (from the HCS topic), and display that in the UI
 function addMessage(message) {
   const tableBody = document
     .getElementById('messagesTable')

@@ -12,6 +12,8 @@ const supportedSchemas = {
 
 const schemaPathPrefix = '../schemas/';
 
+// Maintain a versioned cache of schemas.
+// Initial loading is performed from files present within `schemaPathPrefix`
 function skillVerify(obj) {
   const schemaName = obj.type;
   const [schemaType, schemaVersion] = schemaName.split('/');

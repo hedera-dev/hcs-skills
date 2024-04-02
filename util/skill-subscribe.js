@@ -9,6 +9,11 @@ const { client } = require('./sdk-client.js');
 const { deserialise } = require('./objects.js');
 const { skillVerify } = require('./skill-verify.js');
 
+// This function is used as a callback each time a message is received
+// When messages are received, they have to be:
+// - decoded from their raw format,
+// - deserialised into an object, and
+// - validated
 function parseSkill(msgBin, format, callback) {
   const msgStr = Buffer.from(msgBin, format).toString();
   const obj = deserialise(msgStr);
@@ -46,6 +51,8 @@ async function skillSubscribe(topicId, callback) {
     topicId = TopicId.fromString(topicId);
   }
 
+  // Check that the topic actually exists before proceeding
+  // This is done to catch when the IDs of other entity types (e.g. account) are passed in
   let topicInfo;
   try {
     topicInfo = await new TopicInfoQuery()
