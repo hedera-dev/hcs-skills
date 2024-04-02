@@ -6,29 +6,23 @@ const {
   topicGet,
 } = require('./topic-get.js');
 
-const {
-  client,
-  operatorId,
-} = require('../util/sdk-client.js');
+const { skillPublish } = require('../util/skill-publish.js');
 
-async function messageCreate(msgObject) {
-  let { topicId } = await topicGet();
+async function messageCreate(msgObject, topicIdReq) {
+  const topicId = topicIdReq || (await topicGet()).topicId;
   if (!topicId) {
     console.error('No topic ID');
     return null;
   }
 
-  let txResponse = await new TopicMessageSubmitTransaction()
-    .setTopicId(topicId)
-    .setMessage(JSON.stringify(msgObject))
-    .execute(client);
-  
-  await txResponse.getReceipt(client);
-
-  return {
-    operatorId: operatorId.toString(),
+  const result = await skillPublish(
     topicId,
-  };
+    msgObject.accountId,
+    msgObject.userName,
+    msgObject.skillName,
+  );
+
+  return result;
 }
 
 module.exports = {

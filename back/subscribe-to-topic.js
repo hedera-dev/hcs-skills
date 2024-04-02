@@ -3,39 +3,53 @@ const {
 } = require('@hashgraph/sdk');
 
 const { topicGet } = require('./topic-get.js');
-const { client } = require('../util/sdk-client.js');
-const { addHash } = require('../util/objects.js');
-const { skillVerify } = require('../util/skill-verify.js');
+const {
+  skillGetAll,
+  skillSubscribe,
+} = require('../util/skill-subscribe.js');
 
-async function subscribeToTopic(wsServer) {
-  let { topicId } = await topicGet();
+// key: topicId
+// value: TopicMessageQuery (subscription)
+const subscriptions = new Map();
 
-  // delay the subscription (timeout) 5s
-  await new Promise((resolve) => setTimeout(resolve, 5000));
+async function getSubscription(topicId, wsServer) {
+  const topicIdStr = topicId.toString();
+  const socketId = `hcs-skill-${topicIdStr}`;
 
-  try {
-    new TopicMessageQuery().setTopicId(topicId).subscribe(
-      client,
-      (message) => {
-        const mirrorMessage = new TextDecoder('utf-8').decode(message.contents);
-        const messageJson = JSON.parse(mirrorMessage);
-        const messageWithHash = addHash(messageJson);
+  // get all previously submitted skills for this topic
+  await skillGetAll(topicIdStr, onGetSkillCallback);
 
-        // Verify if the received message is valid
-        const verificationErrors = skillVerify(messageWithHash);
-        if (verificationErrors && verificationErrors.length > 0) {
-          console.error('Verification errors:', verificationErrors);
-          return;
-        }
+  // Re-use existing TopicMessageQuery subscription if present.
+  // Otherwise initialise a new one
+  let subscription = subscriptions.get(topicIdStr);
+  if (!subscription) {
+    console.log(`Initialising new TopicMessageQuery subscription for ${topicId} relayed on socket ID ${socketId}`);
 
-        wsServer.emit('hcs-skill', JSON.stringify(messageWithHash));
-      }
-    );
-    console.log('MirrorConsensusTopicQuery()', topicId.toString());
-  } catch (error) {
-    console.log('ERROR: MirrorConsensusTopicQuery()', error);
-    process.exit(1);
+    try {
+      subscription = await skillSubscribe(topicIdStr, onGetSkillCallback);
+      subscriptions.set(topicIdStr, subscription);
+      console.log('SUCCESS: TopicMessageQuery()', topicIdStr, socketId);
+    } catch (error) {
+      console.log('ERROR: TopicMessageQuery()', error);
+      throw error;
+    }
   }
+
+  return subscription;
+
+  function onGetSkillCallback(err, obj) {
+    if (err) {
+      console.error('Verification errors');
+      console.log(err, obj);
+      return;
+    }
+    wsServer.emit(socketId, JSON.stringify(obj));
+  }
+}
+
+async function subscribeToTopic(wsServer, topicIdReq) {
+  const topicId = topicIdReq || (await topicGet()).topicId;
+  await getSubscription(topicId, wsServer);
 }
 
 module.exports = {

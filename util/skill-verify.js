@@ -12,6 +12,8 @@ const supportedSchemas = {
 
 const schemaPathPrefix = '../schemas/';
 
+// Maintain a versioned cache of schemas.
+// Initial loading is performed from files present within `schemaPathPrefix`
 function skillVerify(obj) {
   const schemaName = obj.type;
   const [schemaType, schemaVersion] = schemaName.split('/');
@@ -30,15 +32,18 @@ function skillVerify(obj) {
   }
 
   // NOTE: Schema validation
-  // Step (NNN) in the accompanying tutorial
+  // Step (5) in the accompanying tutorial
+  // const isValid = /* ... */;
   const isValid = validator(obj);
   if (!isValid) {
     return validator.errors;
   }
 
   // NOTE: Custom validation
-  // Step (NNN) in the accompanying tutorial
-  const objWithUpdatedHash = addHash(obj)
+  // Step (6) in the accompanying tutorial
+  // const objWithUpdatedHash = /* ... */;
+  // if (obj.hash !== /* ... */) {
+  const objWithUpdatedHash = addHash(obj);
   if (obj.hash !== objWithUpdatedHash.hash) {
     return [{
       instancePath: '/hash',
