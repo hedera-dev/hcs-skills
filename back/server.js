@@ -45,7 +45,6 @@ server.get('/api/v1/topic/get', async (req, res) => {
 server.get('/api/v1/topic/create', async (req, res) => {
   try {
     const result = await topicCreate();
-    await subscribeToTopic(wsServer);
     res.status(200).json(result);
   } catch (ex) {
     console.error(new Date().toISOString(), ex);

@@ -1,6 +1,7 @@
 const {
   TopicId,
   TopicMessageQuery,
+  TopicInfoQuery,
 } = require('@hashgraph/sdk');
 
 
@@ -44,6 +45,18 @@ async function skillSubscribe(topicId, callback) {
   if (typeof topicId === 'string') {
     topicId = TopicId.fromString(topicId);
   }
+
+  let topicInfo;
+  try {
+    topicInfo = await new TopicInfoQuery()
+      .setTopicId(topicId)
+      .execute(client);
+  } catch (ex) {
+    console.log(ex);
+    throw new Error('Topic does not exist');
+  }
+
+  await new Promise((resolve) => { setTimeout(resolve, 5_000) });
 
   // NOTE: Subscribe to HCS topic
   // Step (11) in the accompanying tutorial

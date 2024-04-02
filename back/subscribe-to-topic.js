@@ -49,7 +49,7 @@ async function getSubscription(topicId, wsServer) {
 
 async function subscribeToTopic(wsServer, topicIdReq) {
   const topicId = topicIdReq || (await topicGet()).topicId;
-  getSubscription(topicId, wsServer);
+  await getSubscription(topicId, wsServer);
 }
 
 module.exports = {

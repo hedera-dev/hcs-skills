@@ -61,8 +61,11 @@ async function subNewTopic() {
   }
 
   const result = await response.json();
-  data.topicId = result.topicId;
-  updateSubscribedTopic();
+
+  const inputTopicId = document.getElementById('textInputTopicId');
+  inputTopicId.value = result.topicId;
+
+  subExistingTopic();
 }
 
 function updateSubscribedTopic() {

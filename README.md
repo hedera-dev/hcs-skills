@@ -185,7 +185,7 @@ Fill in the values for the `OPERATOR_ID` and `OPERATOR_PRIVATE_KEY` with those f
 Let's now check that the git repo, npm installation, and `.env` file have been set up properly. Run:
 
 ```shell
-node scripts/checkpoint-setup.js
+node scripts/checkpoint-01-setup.js
 ```
 
 This should produce an output that indicates whether each of the above steps has been performed correctly.
@@ -283,7 +283,7 @@ obj.hash !== objWithUpdatedHash.hash
 Let's now check that the `skillVerify` function that we've just modified works as expected. Run:
 
 ```shell
-node scripts/checkpoint-validation.js
+node scripts/checkpoint-02-validation.js
 ```
 
 This script attempts to validate 3 invalid objects, followed by 1 valid object.
@@ -295,6 +295,7 @@ This should produce an output that contains *validation failures* for the first 
 <summary>Sample output <strong>⬇</strong></summary>
 
 ```text
+Note: Expect 3 validation failures, followed by 1 validation success.
 Object #0:
 Validation failure.
 [
@@ -372,7 +373,7 @@ When `.execute(client)` is invoked on the transaction, the transaction is crypto
 Let's now check that the `skillPublish` function that we've just modified works as expected. Run:
 
 ```shell
-node scripts/checkpoint-publish.js
+node scripts/checkpoint-03-publish.js
 ```
 
 This script attempts to publish a message that fails validation, and subsequently attempts to publish a message that passes validation.
@@ -435,7 +436,7 @@ TODO
 Let's now check that the `skillGetAll` and `skillSubscribe` functions that we've just modified work as expected. Run:
 
 ```shell
-node scripts/checkpoint-subscribe.js
+node scripts/checkpoint-04-subscribe.js
 ```
 
 This script invokes `skillGetAll` which queries all past messages on a HCS topic, and tallies how many of them are valid skill objects, and how many are not. The script also invokes `skillSubscribe`, and then immediately after invokes `skillPublish` (since `skillSubscribe` only tracks new messages on a HCS topic), then finally tallies how many of them are valid skill objects, and how many are not.
@@ -452,6 +453,7 @@ skillGetAll message counts:
 Waiting 5s...
 skillSubscribe message counts:
 { validCount: 1, invalidCount: 0 }
+Waiting 5s...
 ```
 
 If you re-run the same script immediately after, you will notice that the `validCount` for `skillGetAll` increments by 1. The other values remain the same. This is because the script publishes a new valid message to the HCS topic each time it is run for the purposes of testing.
@@ -462,6 +464,7 @@ skillGetAll message counts:
 Waiting 5s...
 skillPublish message counts:
 { validCount: 1, invalidCount: 0 }
+Waiting 5s...
 ```
 
 </details>
