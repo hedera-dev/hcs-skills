@@ -129,7 +129,7 @@ If the version number that is output is **same or higher** than the required ver
 
 ### Set up
 
-#### Step NNN: Set up git repo
+#### Step 1: Set up git repo
 
 To follow along, start with the `main` branch, which is the _default branch_ of this repo. This gives you the initial state from which you can follow along with the steps as described in the tutorial.
 
@@ -149,7 +149,7 @@ git clone git@github.com:hedera-dev/hcs-skills.git
 
 </details>
 
-#### Step NNN: Install dependencies
+#### Step 2: Install dependencies
 
 Enter the `hcs-skills` directory.
 
@@ -163,7 +163,7 @@ Install the dependencies using `npm`.
 npm install
 ```
 
-#### Step NNN: Create your .env file
+#### Step 3: Create your .env file
 
 Make a `.env` file by copying the provided `.env.sample` file. Then open the `.env` file in a code editor, such as VS Code.
 
@@ -209,7 +209,7 @@ You should see 3 `OK!` outputs. If not, please revisit those steps which indicat
 
 ### Verify messages
 
-#### Step NNN: Schema definition
+#### Step 4: Schema definition
 
 Open `schemas/hcs-skill--v1.schema.json`. Looking at the `properties` object within the schema file, we see the following:
 
@@ -248,9 +248,9 @@ Open `schemas/hcs-skill--v1.schema.json`. Looking at the `properties` object wit
 
 This defines the validation rules for the skills objects that you will submit to the HCS Topic.
 
-#### Step NNN: Schema validation
+#### Step 5: Schema validation
 
-Open `front/skill-verify.js`.
+Open `util/skill-verify.js`.
 
 Look in the `skillVerify` function, and within that find the comment `// NOTE: Schema validation`.
 
@@ -260,11 +260,18 @@ At this point, the schema that we just looked at above has been read in, and com
 const isValid = validator(obj);
 ```
 
-#### Step NNN: Custom validation
+#### Step 6: Custom validation
 
-Stay within `front/skill-verify.js`, and the `skillVerify` function. Find the comment `// NOTE: Custom validation` next.
+Stay within `util/skill-verify.js`, and the `skillVerify` function. Find the comment `// NOTE: Custom validation` next.
 
 At this point, the `obj.hash` has been recomputed, and we need to check if this hash matches the hash that was originally in the object.
+
+Create a version of the object with a hash added to it, by invoking the `addHash` function.
+
+```js
+const objWithUpdatedHash = addHash(obj);
+```
+
 Modify the condition of the `if` statement to do the following.
 
 ```js
@@ -281,7 +288,7 @@ node scripts/checkpoint-validation.js
 
 This script attempts to validate 3 invalid objects, followed by 1 valid object.
 
-This should produce an output that contains validation failures for the first 3 objects, and a validation success for the 4th (final) object.
+This should produce an output that contains *validation failures* for the first 3 objects, and a *validation success* for the 4th (final) object.
 
 <details>
 
@@ -319,9 +326,9 @@ Validation success!
 
 ### Publish messages
 
-#### Step NNN: Add hash to message
+#### Step 7: Add hash to message
 
-Open `front/skill-publish.js`.
+Open `util/skill-publish.js`.
 
 Look in the `skillPublish` function, and within that find the comment `// NOTE: Add hash to message`.
 
@@ -333,9 +340,9 @@ Create an object named `obj` by invoking `addHash` on the `skillData` object.
 
 The `addHash` function is found within `util/objects.js`. It simply serialises an object as a string, then hashes it using the `sha256` hash function, and adds that hash to the original object. This has already been implemented for you, and no modification is necessary.
 
-#### Step NNN: Verify message
+#### Step 8: Verify message
 
-Stay within `front/skill-publish.js`, and the `skillPublish` function. Find the comment `// NOTE: Verify message` next.
+Stay within `util/skill-publish.js`, and the `skillPublish` function. Find the comment `// NOTE: Verify message` next.
 
 Before publishing the message, you will want to verify that it conforms to the required format of a skill object. To do so, invoke the `skillVerify` function completed previously, by passing in `obj`.
 
@@ -345,9 +352,9 @@ Before publishing the message, you will want to verify that it conforms to the r
 
 This will return an array of validation errors, if there are any. The subsequent lines perform error handling, and blocks the message from being published if there is any error. This has already been implemented for you, and no modification is necessary.
 
-#### Step NNN: Submit message to HCS topic
+#### Step 9: Submit message to HCS topic
 
-Stay within `front/skill-publish.js`, and the `skillPublish` function. Find the comment `// NOTE: Submit message to HCS topic` next.
+Stay within `util/skill-publish.js`, and the `skillPublish` function. Find the comment `// NOTE: Submit message to HCS topic` next.
 
 Now you are finally ready to publish the message to the HCS topic. To do so, we send a `TopicMessageSubmitTransaction` to the network. As its name suggests, it submits a message to a HCS topic. Pass in `topicId` and `hcsMsg` as properties of this transaction.
 
@@ -397,9 +404,9 @@ Status { _code: 22 }
 
 ### Read messages
 
-#### Step NNN: Mirror Node query of HCS topic
+#### Step 10: Mirror Node query of HCS topic
 
-Open `front/skill-subscribe.js`.
+Open `util/skill-subscribe.js`.
 
 Look in the `skillGetAll` function, and within that find the comment `// NOTE: Mirror Node query of HCS topic`.
 
@@ -411,9 +418,9 @@ Look in the `skillGetAll` function, and within that find the comment `// NOTE: M
 
 TODO
 
-#### Step NNN: Subscribe to HCS topic
+#### Step 11: Subscribe to HCS topic
 
-Stay within `front/skill-subscribe.js`, and look in the `skillSubscribe` function. Find the comment `// NOTE: Subscribe to HCS topic` next.
+Stay within `util/skill-subscribe.js`, and look in the `skillSubscribe` function. Find the comment `// NOTE: Subscribe to HCS topic` next.
 
 ```js
   new TopicMessageQuery()

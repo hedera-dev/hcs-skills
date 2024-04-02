@@ -23,11 +23,13 @@ async function skillPublish(topicId, accountId, userName, skillName) {
   };
 
   // NOTE: Add hash to message
-  // Step (NNN) in the accompanying tutorial
+  // Step (7) in the accompanying tutorial
+  // const obj = /* ... */;
   const obj = addHash(skillData);
 
   // NOTE: Verify message
-  // Step (NNN) in the accompanying tutorial
+  // Step (8) in the accompanying tutorial
+  // const validationErrors = /* ... */;
   const validationErrors = skillVerify(obj);
   if (validationErrors) {
     console.error(validationErrors);
@@ -35,8 +37,9 @@ async function skillPublish(topicId, accountId, userName, skillName) {
   }
 
   // NOTE: Submit message to HCS topic
-  // Step (NNN) in the accompanying tutorial
+  // Step (9) in the accompanying tutorial
   const hcsMsg = serialise(obj);
+  // const topicMsgSubmitTx = await new TopicMessageSubmitTransaction(/* ... */).execute(client);
   const topicMsgSubmitTx = await new TopicMessageSubmitTransaction({
     topicId: topicId,
     message: hcsMsg,
