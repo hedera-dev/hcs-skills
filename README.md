@@ -411,17 +411,23 @@ Open `util/skill-subscribe.js`.
 
 Look in the `skillGetAll` function, and within that find the comment `// NOTE: Mirror Node query of HCS topic`.
 
+Ensure that the `topicId` is within the URL, before using it in an HTTP request, like so:
+
 ```js
   const mirrorNodeUrl =
     `https://testnet.mirrornode.hedera.com/api/v1/topics/${topicId.toString()}/messages`;
   const fetchResponse = await fetch(mirrorNodeUrl);
 ```
 
-TODO
+This is a standard HTTP API, and can be queried without using the Hedera SDK. In fact, in this example we are using `fetch` to do so. You can explore this API, and others related to HCS Topics, using the interactive docs available at [Hedera Mirror Node REST API](https://testnet.mirrornode.hedera.com/api/v1/docs/#/topics/listTopicMessagesById).
 
 #### Step 11: Subscribe to HCS topic
 
 Stay within `util/skill-subscribe.js`, and look in the `skillSubscribe` function. Find the comment `// NOTE: Subscribe to HCS topic` next.
+
+In `skillGetAll` you performed a *one-off* query to get all *prior messages* in the topic. In this `skillSubscribe` function, we intend to do something different, which is to perform a *persistent* query to get all *future messages* in the topic -- in other words, a *subscription*.
+
+To do so, create a new `TopicMessageQuery` and invoke `setTopicId`.
 
 ```js
   new TopicMessageQuery()
@@ -429,7 +435,7 @@ Stay within `util/skill-subscribe.js`, and look in the `skillSubscribe` function
     .subscribe(client, (msgBin) => parseSkill(msgBin.contents, 'utf8', callback));
 ```
 
-TODO
+Note that unlike other interactions via the SDK, which end with `.execute(client)`, this one ends with `.subscribe(client, callback)`. This is because this is still a query (as opposed to a transaction which can alter the state of the network), and because it is a subscription.
 
 #### Checkpoint: Read messages
 
@@ -477,6 +483,10 @@ Open `front/index.js`.
 
 Look in the `subExistingTopic` function, and within that find the comment `// NOTE: Subscribe to topic`.
 
+The intent of this function is to subscribe to a particular topic. Recall in *"Step 11: Subscribe to HCS topic"* that you implemented a `skillSubscribe` function which invokes `TopicMessageQuery` through the SDK. That `skillSubscribe` function is exposed via the server API, and available at the path `/api/v1/topic/subscribe/TOPIC_ID`.
+
+To start the subscription within the application, invoke `fetch`, and pass in the URL, substituting the Topic ID appropriately, like so:
+
 ```js
   const response = await fetch(
     `/api/v1/topic/subscribe/${textInputTopicId}`,
@@ -489,7 +499,12 @@ Look in the `subExistingTopic` function, and within that find the comment `// NO
   );
 ```
 
-TODO
+To see how the front end and back end work together, you may want to check out the following:
+
+- In `back/server.js`, the API route handler for `server.get('/api/v1/topic/subscribe/:topicId', ...);` invokes `back/subscribe-to-topic.js`, which in turn invokes `util/skill-subscribe.js`, where the SDK is used to perform the subscription.
+- Each time a message on the Topic is detected in `util/skill-subscribe.js`, it passes that onto the callback in `back/subscribe-to-topic.js` named `onGetSkillCallback`.
+- The `onGetSkillCallback` emits a message on a web socket with the ID `hcs-skill-TOPIC_ID`.
+- On the client, see the `updateSubscribedTopic` function within `front/index.js`, where `socket.on(data.socketId, onSocketHcsSkill);` listens for messages on a websocket with the ID `hcs-skill-TOPIC_ID`. The `onSocketHcsSkill` function parses each message and displays it in the UI.
 
 ### Wrap
 
@@ -505,6 +520,7 @@ Possible stretch goals:
 
 - **Easy**: Create a more detailed schema for specific use cases
   - For example: https://github.com/OpenCerts
+- **Moderate**: Investigate the use of `setSubmitKey` on `TopicCreateTransaction` to create a private HCS topic. Use this in combination with `ThresholdKey` to create a whitelist of accounts that may submit to the private topic.
 - **Hard**: Modify `skillVerify` such that the `accountId` in the message matches the account that submitted the HCS transaction
 - **Very hard**: Modify system to enable multiple schemas for different object types being published to the same schema, and to allow them to reference each other
   - For example: Define `person` and `skill` as separate entities, where there is a many-to-many relationship between the two.
