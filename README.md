@@ -466,6 +466,28 @@ skillPublish message counts:
 
 </details>
 
+### Client Application
+
+#### Step 12: Subscribe to topic
+
+Open `front/index.js`.
+
+Look in the `subExistingTopic` function, and within that find the comment `// NOTE: Subscribe to topic`.
+
+```js
+  const response = await fetch(
+    `/api/v1/topic/subscribe/${textInputTopicId}`,
+    {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    },
+  );
+```
+
+TODO
+
 ### Wrap
 
 Now you have a working application built on top of Hedera Consensus Service!
