@@ -1,3 +1,25 @@
+import {
+  AccountId,
+  PrivateKey,
+} from '@hashgraph/sdk';
+import { skillPublish } from '../util/skill-publish.js';
+
+console.log('Hello Future!');
+
+const accountId = AccountId.fromEvmAddress(
+    0, 0, '0x607e20c1008fd750d2db11176f61c1dd93fa8c43');
+console.log(accountId.toString());
+
+const privateKey = PrivateKey.generateECDSA();
+const publicKey = privateKey.publicKey;
+const evmAddress = publicKey.toEvmAddress();
+console.log({
+    privateKey: privateKey.toString(),
+    publicKey: publicKey.toStringRaw(),
+    evmAddress: `0x${evmAddress}`,
+});
+
+// @ts-ignore
 const socket = io('/');
 
 socket.on('connect', function() {
@@ -11,9 +33,18 @@ const data = {
   socketId: '',
 };
 
+document.addEventListener('DOMContentLoaded', async function() {
+  const subscribeNewTopicButton = (document.querySelector('#subscribeNewTopicButton'));
+  subscribeNewTopicButton.addEventListener('click', subNewTopic);
+  const subscribeExistingTopicButton = (document.querySelector('#subscribeExistingTopicButton'));
+  subscribeExistingTopicButton.addEventListener('click', subExistingTopic);
+  const submitSkillButton = (document.querySelector('#submitSkillButton'));
+  submitSkillButton.addEventListener('click', submitSkill);
+});
+
 // Subscribe to an existing topic
 async function subExistingTopic() {
-  const textInputTopicId = document.getElementById('textInputTopicId').value;
+  const textInputTopicId = (document.getElementById('textInputTopicId')).value;
   if (!textInputTopicId) {
     alert('Please enter a topic ID to subscribe to.');
     return;
@@ -73,6 +104,10 @@ async function subNewTopic() {
 function updateSubscribedTopic() {
   // Immediate UI display update
   const newTopicId = document.getElementById('newTopicId');
+  if (!newTopicId) {
+    console.error('New topic ID');
+    return;
+  }
   newTopicId.innerHTML = `<b>Topic ID: ${data.topicId}</b>`;
 
   // unsubscribe from listening to previous topic,
@@ -94,47 +129,66 @@ function onSocketHcsSkill(msg) {
 }
 
 // Send message to server, which will relay to HCS topic
-async function submitToHedera() {
-  const textInputSkill = document.getElementById('textInputSkill').value;
-  const textInputUsername = document.getElementById('textInputUsername').value;
-  const textInputAccountId = document.getElementById('textInputAccountId').value;
+async function submitSkill() {
+  const textInputSkill = (document.getElementById('textInputSkill')).value;
+  const textInputUsername = (document.getElementById('textInputUsername')).value;
+  const textInputAccountId = (document.getElementById('textInputAccountId')).value;
   if (!textInputSkill || !textInputUsername || !textInputAccountId) {
     alert('Please enter some text to submit.');
     return;
   }
 
-  const response = await fetch(
-    `/api/v1/message/create/${data.topicId}`,
-    {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        type: data.type,
-        accountId: textInputAccountId,
-        skillName: textInputSkill,
-        userName: textInputUsername,
-      }),
-    },
-  );
-
-  if (!response.ok) {
-    const message = `An error occurred: ${response.statusText}`;
-    throw new Error(message);
+  let result;
+  try {
+    result = await skillPublish(
+      data.topicId,
+      textInputAccountId,
+      textInputUsername,
+      textInputSkill);
+  } catch (ex) {
+    console.error(ex);
   }
 
-  const result = await response.json(); // Assuming the server responds with JSON
-  document.getElementById('textInputSkill').value = ''; // Clear the input field
-  document.getElementById('textInputUsername').value = ''; // Clear the input field
-  document.getElementById('textInputAccountId').value = ''; // Clear the input field
+  (document.getElementById('textInputSkill')).value = ''; // Clear the input field
+  (document.getElementById('textInputUsername')).value = ''; // Clear the input field
+  (document.getElementById('textInputAccountId')).value = ''; // Clear the input field
+
+  // const response = await fetch(
+  //   `/api/v1/message/create/${data.topicId}`,
+  //   {
+  //     method: 'POST',
+  //     headers: {
+  //       'Content-Type': 'application/json',
+  //     },
+  //     body: JSON.stringify({
+  //       type: data.type,
+  //       accountId: textInputAccountId,
+  //       skillName: textInputSkill,
+  //       userName: textInputUsername,
+  //     }),
+  //   },
+  // );
+
+  // if (!response.ok) {
+  //   const message = `An error occurred: ${response.statusText}`;
+  //   throw new Error(message);
+  // }
+
+  // const result = await response.json(); // Assuming the server responds with JSON
+  // (document.getElementById('textInputSkill')).value = ''; // Clear the input field
+  // (document.getElementById('textInputUsername')).value = ''; // Clear the input field
+  // (document.getElementById('textInputAccountId')).value = ''; // Clear the input field
 }
 
 // Parse a received skill (from the HCS topic), and display that in the UI
 function addMessage(message) {
   const tableBody = document
     .getElementById('messagesTable')
-    .getElementsByTagName('tbody')[0];
+    ?.getElementsByTagName('tbody')[0];
+  if (!tableBody) {
+    console.error('No table found.');
+    return;
+  }
 
   const newRow = tableBody.insertRow();
 

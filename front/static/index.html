@@ -6,16 +6,19 @@
     <title>Submit and Stream Messages with Hedera</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.5/socket.io.js"></script>
   <body>
     <div class="container">
       <h2>Submit Skill to Hedera</h2>
       <div id="newTopicId">
-        <button onclick="subNewTopic()">Subscribe to New Topic</button>
+        <button id="subscribeNewTopicButton">Subscribe to New Topic</button>
       </div>
       <div id="existingTopicId">
-        <input type="text" id="textInputTopicId" placeholder="Enter Topic ID" />
-        <button onclick="subExistingTopic()">Subscribe to Existing Topic</button>
+        <input
+          type="text"
+          value="0.0.3745107"
+          id="textInputTopicId"
+          placeholder="Enter Topic ID" />
+        <button id="subscribeExistingTopicButton">Subscribe to Existing Topic</button>
       </div>
       <div id="submitSkill">
         <input type="text" id="textInputSkill" placeholder="Enter your skill" />
@@ -25,7 +28,7 @@
           placeholder="Enter your username"
         />
         <input type="text" id="textInputAccountId" placeholder="Enter your account ID" />
-        <button onclick="submitToHedera()">Submit</button>
+        <button id="submitSkillButton">Submit</button>
       </div>
     </div>
 
@@ -44,7 +47,8 @@
       </tbody>
     </table>
 
-    <script type="text/javascript" src="index.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.5/socket.io.js"></script>
+    <script type="text/javascript" src="dapp.umd.js"></script>
 
   </body>
 </html>

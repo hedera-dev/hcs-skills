@@ -1,0 +1,5 @@
+{
+  "clear": true,
+  "notify": true,
+  "debounce": 5000
+}

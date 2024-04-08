@@ -74,7 +74,7 @@ server.post('/api/v1/message/create/:topicId?', async (req, res) => {
 
 // fallback route to serve static files
 
-server.use(express.static(path.resolve(__dirname, '../front')));
+server.use(express.static(path.resolve(__dirname, '../dist')));
 
 // initialise both the HTTP and WS servers.
 // however, they do not start running/ listening yet -
