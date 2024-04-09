@@ -1,7 +1,7 @@
-const topicPersist = require('./topic-persist.js');
+import { read } from './topic-persist.js';
 
 async function topicGet() {
-  const topicId = await topicPersist.read();
+  const topicId = await read();
   const topicIdString = (!!topicId) ?
     topicId.toString() :
     null;
@@ -10,6 +10,6 @@ async function topicGet() {
   };
 }
 
-module.exports = {
+export {
   topicGet,
 };

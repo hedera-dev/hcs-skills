@@ -1,14 +1,17 @@
-const http = require('node:http');
-const path = require('node:path');
+import http from 'node:http';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-const express = require('express');
-const cors = require('cors');
-const { Server } = require('socket.io');
+import express from 'express';
+import cors from 'cors';
+import { Server } from 'socket.io';
 
-const { topicCreate } = require('./topic-create.js');
-const { topicGet } = require('./topic-get.js');
-const { subscribeToTopic } = require('./subscribe-to-topic.js');
-const { messageCreate } = require('./message-create.js');
+import { topicCreate } from './topic-create.js';
+import { topicGet } from './topic-get.js';
+import { subscribeToTopic } from './subscribe-to-topic.js';
+import { messageCreate } from './message-create.js';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const server = express();
 
@@ -98,7 +101,7 @@ function getServers () {
   };
 }
 
-module.exports = {
+export {
   server,
   httpServer,
   wsServer,

@@ -13,7 +13,7 @@ async function read() {
   return store.topicId;
 }
 
-module.exports = {
+export {
   create,
   read,
 };

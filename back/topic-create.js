@@ -1,23 +1,16 @@
-const {
-  TopicCreateTransaction,
-} = require('@hashgraph/sdk');
+import { TopicCreateTransaction } from '@hashgraph/sdk';
 
-const {
-  topicGet,
-} = require('./topic-get.js');
-const topicPersist = require('./topic-persist.js');
+import { topicGet } from './topic-get.js';
+import { create } from './topic-persist.js';
 
-const {
-  client,
-  operatorId,
-} = require('../util/sdk-client.js');
+import { client, operatorId } from '../util/sdk-client.js';
 
 async function topicCreateRaw() {
   // register a new Topic in HCS
   let txResponse = await new TopicCreateTransaction().execute(client);
   let receipt = await txResponse.getReceipt(client);
   let topicId = receipt.topicId;
-  topicPersist.create(topicId);
+  create(topicId);
   return {
     operatorId: operatorId.toString(),
     topicId,
@@ -40,7 +33,7 @@ async function topicCreate() {
   };
 }
 
-module.exports = {
+export {
   topicCreateRaw,
   topicCreate,
 };

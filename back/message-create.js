@@ -1,12 +1,8 @@
-const {
-  TopicMessageSubmitTransaction,
-} = require('@hashgraph/sdk');
+import { TopicMessageSubmitTransaction } from '@hashgraph/sdk';
 
-const {
-  topicGet,
-} = require('./topic-get.js');
+import { topicGet } from './topic-get.js';
 
-const { skillPublish } = require('../util/skill-publish.js');
+import { skillPublish } from '../util/skill-publish.js';
 
 async function messageCreate(msgObject, topicIdReq) {
   const topicId = topicIdReq || (await topicGet()).topicId;
@@ -25,6 +21,6 @@ async function messageCreate(msgObject, topicIdReq) {
   return result;
 }
 
-module.exports = {
+export {
   messageCreate,
 };

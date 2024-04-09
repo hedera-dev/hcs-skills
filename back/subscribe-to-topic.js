@@ -1,12 +1,7 @@
-const {
-  TopicMessageQuery,
-} = require('@hashgraph/sdk');
+import { TopicMessageQuery } from '@hashgraph/sdk';
 
-const { topicGet } = require('./topic-get.js');
-const {
-  skillGetAll,
-  skillSubscribe,
-} = require('../util/skill-subscribe.js');
+import { topicGet } from './topic-get.js';
+import { skillGetAll, skillSubscribe } from '../util/skill-subscribe.js';
 
 // key: topicId
 // value: TopicMessageQuery (subscription)
@@ -52,6 +47,6 @@ async function subscribeToTopic(wsServer, topicIdReq) {
   await getSubscription(topicId, wsServer);
 }
 
-module.exports = {
+export {
   subscribeToTopic,
 };

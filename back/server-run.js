@@ -1,7 +1,7 @@
-const {
+import {
   httpServer,
   wsServer,
-} = require('./server.js');
+} from './server.js';
 
 const portNumber = 3113;
 

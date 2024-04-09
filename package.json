@@ -1,8 +1,12 @@
 {
   "name": "hcs-skills",
   "version": "0.0.0",
+  "type": "module",
   "description": "Publish and subscribe to skills on Hedera Consensus Service (HCS)",
   "main": "index.js",
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "dev": "npm run client-build && npm run client-static && npm run server-watch",
     "client-build": "vue-cli-service build --dest ./dist/ --formats 'umd' --target lib --name dapp front/dapp.js",
