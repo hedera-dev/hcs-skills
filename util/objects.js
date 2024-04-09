@@ -1,6 +1,6 @@
-const crypto = require('crypto');
+import crypto from 'crypto';
 
-const { configure } = require('safe-stable-stringify');
+import { configure }  from 'safe-stable-stringify';
 
 const safeStableStringify = configure({
   deterministic: true,
@@ -46,7 +46,7 @@ function removeHash(obj) {
   return restOfObj;
 }
 
-module.exports = {
+export {
   serialise,
   deserialise,
   addHash,

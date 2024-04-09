@@ -1,13 +1,13 @@
-const {
+import {
   TopicId,
   TopicMessageQuery,
   TopicInfoQuery,
-} = require('@hashgraph/sdk');
+} from '@hashgraph/sdk';
 
 
-const { client } = require('./sdk-client.js');
-const { deserialise } = require('./objects.js');
-const { skillVerify } = require('./skill-verify.js');
+import { client } from './sdk-client.js';
+import { deserialise } from './objects.js';
+import { skillVerify } from './skill-verify.js';
 
 // This function is used as a callback each time a message is received
 // When messages are received, they have to be:
@@ -77,7 +77,7 @@ async function skillSubscribe(topicId, callback) {
   return subscription;
 }
 
-module.exports = {
+export {
   skillGetAll,
   skillSubscribe,
 };

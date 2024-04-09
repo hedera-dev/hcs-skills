@@ -1,14 +1,14 @@
-const {
+import {
   TopicId,
   TopicMessageSubmitTransaction,
-} = require('@hashgraph/sdk');
+} from '@hashgraph/sdk';
 
-const { client } = require('./sdk-client.js');
-const { skillVerify } = require('./skill-verify.js');
-const {
+import { client } from './sdk-client.js';
+import { skillVerify } from './skill-verify.js';
+import {
   addHash,
   serialise,
-} = require('./objects.js');
+} from './objects.js';
 
 async function skillPublish(topicId, accountId, userName, skillName) {
   if (typeof topicId === 'string') {
@@ -56,6 +56,6 @@ async function skillPublish(topicId, accountId, userName, skillName) {
   };
 }
 
-module.exports = {
+export {
   skillPublish,
 };

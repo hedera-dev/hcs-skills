@@ -1,21 +1,22 @@
-const path = require('path');
-const dotenv = require('dotenv');
-const {
+// import path from 'path';
+// import dotenv from 'dotenv';
+import {
   AccountId,
   PrivateKey,
   Client,
-} = require('@hashgraph/sdk');
+} from '@hashgraph/sdk';
 
-dotenv.config({
-  path: path.resolve(__dirname, '../.env'),
-});
+// TODO need different `client` between server and browser components
+// dotenv.config({
+//   path: path.resolve(__dirname, '../.env'),
+// });
 
 // Configure accounts and client, and generate needed keys
 const operatorId = AccountId.fromString(process.env.OPERATOR_ID);
 const operatorKey = PrivateKey.fromStringED25519(process.env.OPERATOR_PRIVATE_KEY);
 const client = Client.forTestnet().setOperator(operatorId, operatorKey);
 
-module.exports = {
+export {
   client,
   operatorId,
   operatorKey,

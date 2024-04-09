@@ -1,6 +1,6 @@
-const ajvModule = require('ajv/dist/2020.js');
+import ajvModule from 'ajv/dist/2020.js';
 
-const { addHash } = require('./objects.js');
+import { addHash } from './objects.js';
 
 const ajv = new ajvModule({
   allErrors: true,
@@ -54,6 +54,6 @@ function skillVerify(obj) {
   return undefined;
 }
 
-module.exports = {
+export {
   skillVerify,
 };
